@@ -14,9 +14,13 @@ class Face():
 
 @dataclass
 class From():
-    label = "Label"
-    filename = "Filename"
+    LABEL = "Label"
+    FILENAME = "Filename"
 
+@dataclass
+class To():
+    NAME = "Name"
+    NUMBER = "Number"
 
 # Make a class to semi-supervised the face recognition
 class FaceCore():
@@ -35,6 +39,8 @@ class FaceCore():
         self.model_dir = os.path.join(_default_dir, "model", "face_model.pkl")
 
         self.predict_dir = os.path.join(_default_dir, "predict")
+
+        self.label: dict = {}
 
     @staticmethod
     def _isImage(filename: str) -> bool:
@@ -63,8 +69,8 @@ class FaceCore():
         Parameters
         ----------
         target (str) :
-            - "From.label" : label of the face object. (name of the person)
-            - "From.filename" : filename of the face object.
+            - "From.LABEL" : label of the face object. (name of the person)
+            - "From.FILENAME" : filename of the face object.
         
         value (str) : value of the target.
         """
