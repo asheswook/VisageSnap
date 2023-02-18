@@ -166,12 +166,26 @@ class FaceCore():
             return self.label.get(value, -1)
         return None
 
+    def set_label(self, label: dict):
         """
+        This function sets the label dictionary.
+        
+        Parameters
+        ----------
+        label (dict) : label dictionary.
+
+        Example
+        -------
         label = {
-            "NY": 0,
-            "JY": 1,
-        }.get(name, -1)
-        return label
+            "name1": 0,
+            "name2": 1,
+            "name3": 2,
+            ...
+        }
+        - name1, name2, name3, ... : name of the person
+        - 0, 1, 2, ... : number label (MUST NOT BE -1)
+        """
+        self.label = label
         
 
     def _train(self, labeled: bool):
