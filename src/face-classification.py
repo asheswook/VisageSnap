@@ -147,14 +147,25 @@ class FaceCore():
         with open(self.model_dir, "wb") as f:
             pickle.dump((model, self.faces), f)
 
-    @staticmethod
-    def _nameL_to_numberL(name: str) -> int:
+    def convert_labelType(self, value, to: str):
         """
-        This function converts the name label extracted from the filename to a number label, which is necessary when training the model.
+        This function converts the label type. (numberLabel -> nameLabel, nameLabel -> numberLabel)
         
         Parameters
         ----------
-        name (str) : Name label.
+        value (str or int) : target value.
+        to (str) :
+            - "To.NAME" : convert to name label.
+            - "To.NUMBER" : convert to number label.
+        """
+        if to == "Name":
+            for name, number in self.label.items():
+                if number == value:
+                    return name
+        elif to == "Number":
+            return self.label.get(value, -1)
+        return None
+
         """
         label = {
             "NY": 0,
@@ -171,7 +182,7 @@ class FaceCore():
 
         for face in self.faces:
             for encoding in face.encodings:
-                numberLabel = self._nameL_to_numberL(face.label)
+                numberLabel = self.convert_labelType(face.label, To.NUMBER)
                 if labeled and numberLabel == -1:
                     continue
                 t_names.append(numberLabel)
