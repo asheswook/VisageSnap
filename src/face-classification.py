@@ -192,6 +192,38 @@ class FaceCore():
         - 0, 1, 2, ... : number label (MUST NOT BE -1)
         """
         self.label = label
+
+    def set_directory(self, dict: dict):
+        """
+        This function sets the directory.
+        
+        Parameters
+        ----------
+        dict (dict) : directory dictionary.
+
+        Example
+        -------
+        dict = {
+            "labeled": "labeled",
+            "unlabeled": "unlabeled",
+            "model": "model"
+        }
+        - labeled : directory of the labeled data
+        - unlabeled : directory of the unlabeled data
+        - model : directory of the model
+
+        Default
+        -------
+        labeled : "labeled"
+        unlabeled : "unlabeled"
+        model : "model"
+        """
+        if "labeled" in dict:
+            self.labeled_dir = dict["labeled"]
+        if "unlabeled" in dict:
+            self.unlabeled_dir = dict["unlabeled"]
+        if "model" in dict:
+            self.model_dir = dict["model"]
         
 
     def _train(self, labeled: bool):
