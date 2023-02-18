@@ -22,5 +22,6 @@ setuptools.setup(
     ],
     package_dir={'': 'src'},
     package=setuptools.find_packages(where='src'),
-    python_requires='>=3.6',
+    python_requires='>=3.7',
+    requires=['numpy', 'scikit-learn', 'dlib', 'face_recognition', 'pickle'],
 )
