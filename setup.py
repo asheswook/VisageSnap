@@ -13,7 +13,7 @@ requirements = [
 
 setuptools.setup(
     name='FaceFlow',
-    version='0.1',
+    version='0.1.1',
     author='Jaewook Lee',
     author_email='me@jwlee.xyz',
     description='Face Classification package',
