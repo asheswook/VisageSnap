@@ -3,8 +3,16 @@ import setuptools
 with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
+requirements = [
+    'numpy',
+    'scikit-learn',
+    'dlib',
+    'face_recognition',
+    'pickle',
+]
+
 setuptools.setup(
-    name='face-classification',
+    name='face_classification',
     version='0.1',
     author='Jaewook Lee',
     author_email='me@jwlee.xyz',
@@ -20,8 +28,8 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    package_dir={'': 'src'},
-    package=setuptools.find_packages(where='src'),
+    package_dir={'': 'face_classification'},
+    package=setuptools.find_packages(where='face_classification'),
     python_requires='>=3.7',
-    requires=['numpy', 'scikit-learn', 'dlib', 'face_recognition', 'pickle'],
+    install_requires=requirements,
 )
