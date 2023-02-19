@@ -172,26 +172,36 @@ class FaceCore():
             return self.label.get(value, -1)
         return None
 
-    def set_label(self, label: dict):
+    def set_label(self, person):
         """
         This function sets the label dictionary.
         
         Parameters
         ----------
-        label (dict) : label dictionary.
+        person (list or dict) : label list or dictionary.
 
         Example
         -------
-        label = {
+        person = ["name1", "name2", "name3", ...]
+
+        OR
+
+        person = {
             "name1": 0,
             "name2": 1,
             "name3": 2,
             ...
         }
+
         - name1, name2, name3, ... : name of the person
         - 0, 1, 2, ... : number label (MUST NOT BE -1)
         """
-        self.label = label
+        
+        if type(person) == dict:
+            self.label = person
+        elif type(person) == list:
+            for i in range(len(person)):
+                self.label[person[i]] = i
 
     def set_directory(self, dict: dict):
         """
