@@ -23,11 +23,11 @@ class To():
     NUMBER = "Number"
 
 # Make a class to semi-supervised the face recognition
-class FaceCore():
+class Core():
     def __init__(self):
         """
-        FaceCore
-        --------
+        VisageSnap Core Class
+        ---------------------
         """
         _default_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
         self.faces = []

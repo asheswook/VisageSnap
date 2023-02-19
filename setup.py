@@ -11,16 +11,16 @@ requirements = [
 ]
 
 setuptools.setup(
-    name='FaceFlow',
-    version='0.1.4',
+    name='VisageSnap',
+    version='0.1',
     author='Jaewook Lee',
     author_email='me@jwlee.xyz',
     description='Face Classification package',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/asheswook/FaceFlow',
+    url='https://github.com/asheswook/VisageSnap',
     project_urls={
-        'Bug Tracker': 'https://github.com/asheswook/FaceFlow/issues',
+        'Bug Tracker': 'https://github.com/asheswook/VisageSnap/issues',
     },
     classifiers=[
         'Programming Language :: Python :: 3',
