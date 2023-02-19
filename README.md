@@ -6,7 +6,7 @@ Recognizes faces and trains models, brings in the pictures and provides identifi
 
 -   Recognize faces.
 -   Train the model through semi-supervised learning with labeled or unlabeled pictures.
--   It provides identification predictions and face classification for pictures.
+-   Provides identification predictions and face classification for pictures.
 
 ## Usage
 
@@ -79,6 +79,8 @@ print(result)
 #   "target3.jpeg": "Jerry"
 #}
 ```
+
+---
 
 **To change the directory you work with**
 
