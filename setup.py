@@ -12,7 +12,7 @@ requirements = [
 
 setuptools.setup(
     name='FaceFlow',
-    version='0.1.2',
+    version='0.1.4',
     author='Jaewook Lee',
     author_email='me@jwlee.xyz',
     description='Face Classification package',
@@ -27,8 +27,7 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    package_dir={'': 'FaceFlow'},
-    package=setuptools.find_packages(where='FaceFlow'),
+    package=setuptools.find_packages(),
     python_requires='>=3.9',
     install_requires=requirements,
 )
