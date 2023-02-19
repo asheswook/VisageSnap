@@ -227,7 +227,10 @@ class FaceCore():
         
 
     def _train(self, labeled: bool):
-        self._load_labeled()
+        if labeled:
+            self._load_labeled()
+        else:
+            self._load_unlabeled()
 
         t_names = []
         t_encodings =[]
