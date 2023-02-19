@@ -280,8 +280,11 @@ class FaceCore():
         
 
     def predict_all(self):
+        result = {}
         for filename in os.listdir(self.predict_dir):
-            if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".jpeg"):
+            if self._isImage(filename):
                 image = face_recognition.load_image_file(os.path.join(self.predict_dir, filename))
-                names = self.predict(image)
-                print(f"예측 결과- {filename}: {names}")
+                numberLabel = self.predict(image)
+                nameLabel = self.convert_labelType(numberLabel, To.NAME)
+                result[filename] = nameLabel
+        return result
