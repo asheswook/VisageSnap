@@ -8,7 +8,6 @@ requirements = [
     'scikit-learn',
     'dlib',
     'face_recognition',
-    'pickle',
 ]
 
 setuptools.setup(
@@ -30,6 +29,6 @@ setuptools.setup(
     ],
     package_dir={'': 'FaceFlow'},
     package=setuptools.find_packages(where='FaceFlow'),
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     install_requires=requirements,
 )
