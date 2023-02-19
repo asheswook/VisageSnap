@@ -1,0 +1,5 @@
+numpy
+scikit-learn
+dlib>=19.7
+face_recognition
+pickle
