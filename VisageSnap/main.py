@@ -150,6 +150,10 @@ class Core():
             return model
 
     def _save_model(self, model):
+        if not os.path.exists(os.path.dirname(self.model_dir)):
+            os.makedirs(os.path.dirname(self.model_dir))
+        ## 다른 곳에도 폴더 체크 필요할듯
+
         with open(self.model_dir, "wb") as f:
             pickle.dump((model, self.faces), f)
 
