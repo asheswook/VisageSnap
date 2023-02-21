@@ -29,7 +29,7 @@ class Core():
         VisageSnap Core Class
         ---------------------
         """
-        _default_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+        _default_dir = os.getcwd()
         self.faces = []
 
         # Directory
