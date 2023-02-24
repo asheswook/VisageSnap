@@ -18,7 +18,7 @@ Recognizes faces and trains models, brings in the pictures and provides identifi
     -   Versions below 3.9 have not been tested, and pickle module must be installed via pip.
 -   dilb
 
-First, you need to install dilb. You can install it by following the instructions on the [here](!https://github.com/ageitgey/face_recognition#installation-options).
+First, you need to install dilb. You can install it by following the instructions on the [here](!https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf).
 
 Then, you can install VisageSnap by using pip:
 

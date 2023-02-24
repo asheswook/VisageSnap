@@ -18,7 +18,7 @@
     -   3.9 이하 버전은 테스트되지 않았으며, pip를 통해 pickle 모듈을 설치해야 할 수 있습니다.
 -   dilb
 
-먼저 dilb를 설치해야 합니다. [이 곳](!https://github.com/ageitgey/face_recognition#installation-options)의 지시에 따라 설치할 수 있습니다.
+먼저 dilb를 설치해야 합니다. [이 곳](!https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf)의 지시에 따라 설치할 수 있습니다.
 
 그 다음 pip를 이용해 VisageSnap를 설치합니다.
 
