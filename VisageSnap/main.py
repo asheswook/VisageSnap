@@ -6,6 +6,7 @@ from sklearn.semi_supervised import LabelPropagation
 from sklearn.exceptions import NotFittedError
 import pickle
 from .classes import *
+from .utils import *
 
 
 # Make a class to semi-supervised the face recognition
@@ -69,7 +70,7 @@ class Core():
         assert isinstance(target, str), "target must be 'From.LABEL' or 'From.FILENAME'."
         assert isinstance(value, str), "value must be a string."
 
-        for face in self.faces:
+        for face in self.gen_faces():
             if target == "Label":
                 if face.label == value:
                     return face
@@ -78,13 +79,20 @@ class Core():
                     return face
         return None
 
+    def gen_faces(self) -> list[Face]:
+        """
+        This function returns the face list.
+        """
+        result = []
+        for face in self.faces:
+            yield face
 
 
     def _load_labeled(self) -> None: # 미리 주어지는 데이터는 한 사진에 한 사람만 있어야 한다.
         """
         This function loads the labeled data from the labeled directory.
         """
-        for filename in os.listdir(self.labeled_dir):
+        for filename in gen(os.listdir(self.labeled_dir)):
             if self._isImage(filename):
                 print("Loading labeled data: {}".format(filename))
                 label = (filename.split(".")[0]).split("-")[0] # 파일 형식은 이름-번호.jpg
@@ -98,7 +106,7 @@ class Core():
                 
                 # 같은 이름이 있는지 확인
                 face_found = False
-                for i, face in enumerate(self.faces):
+                for i, face in enumerate(self.gen_faces()):
                     if face.label == label:
                         print("The label is already in the list: {}".format(filename))
                         # 동일한 인코딩이 있는지 확인
@@ -118,7 +126,7 @@ class Core():
         """
         This function loads the unlabeled data from the unlabeled directory.
         """
-        for filename in os.listdir(self.unlabeled_dir):
+        for filename in gen(os.listdir(self.unlabeled_dir)):
             if self._isImage(filename):
                 print("Loading unlabeled data: {}".format(filename))
                 image = face_recognition.load_image_file(os.path.join(self.unlabeled_dir, filename))
@@ -249,8 +257,8 @@ class Core():
         t_names = []
         t_encodings =[]
 
-        for face in self.faces:
-            for encoding in face.encodings:
+        for face in self.gen_faces():
+            for encoding in gen(face.encodings):
                 numberLabel = self.convert_labelType(face.label, To.NUMBER)
                 if labeled and numberLabel == -1: # 라벨링 데이터 학습인데 unknown이면 학습하지 않음
                     continue
@@ -310,7 +318,7 @@ class Core():
         assert isinstance(encoding, np.ndarray), "parameter must be numpy array."
         print("Checking whether the encoding is unknown...")
         min_distance = 1
-        for face in self.faces:
+        for face in self.gen_faces():
             print(face.label)
             average = self._get_average(face) # 저장된 얼굴 평균 구하고
             distance = self._get_distance(encoding, average) # 타겟과의 거리를 구한다
