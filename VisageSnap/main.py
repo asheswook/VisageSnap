@@ -60,6 +60,8 @@ class Core():
         ----------
         filename (str) : target filename.
         """
+        assert isinstance(filename, str), "filename must be a string."
+        
         list = [
             ".jpg",
             ".png",
@@ -77,12 +79,15 @@ class Core():
         
         Parameters
         ----------
-        target (str) :
+        target:
             - "From.LABEL" : label of the face object. (name of the person)
             - "From.FILENAME" : filename of the face object.
         
         value (str) : value of the target.
         """
+        assert isinstance(target, str), "target must be 'From.LABEL' or 'From.FILENAME'."
+        assert isinstance(value, str), "value must be a string."
+
         for face in self.faces:
             if target == "Label":
                 if face.label == value:
@@ -94,7 +99,7 @@ class Core():
 
 
 
-    def _load_labeled(self): # 미리 주어지는 데이터는 한 사진에 한 사람만 있어야 한다.
+    def _load_labeled(self) -> None: # 미리 주어지는 데이터는 한 사진에 한 사람만 있어야 한다.
         """
         This function loads the labeled data from the labeled directory.
         """
@@ -128,7 +133,7 @@ class Core():
                     self.faces.append(Face(label, encodings, [filename]))
 
 
-    def _load_unlabeled(self):
+    def _load_unlabeled(self) -> None:
         """
         This function loads the unlabeled data from the unlabeled directory.
         """
@@ -158,12 +163,12 @@ class Core():
             self.faces = [] # 초기화
             return self.model
 
-    def _save_model(self):
+    def _save_model(self) -> None:
         data = (self.model, self.faces)
         with open(self.model_dir, "wb") as f:
             pickle.dump(data, f)
 
-    def convert_labelType(self, value, to: str):
+    def convert_labelType(self, value, to: str) -> any:
         """
         This function converts the label type. (numberLabel -> nameLabel, nameLabel -> numberLabel)
         
@@ -173,6 +178,10 @@ class Core():
         to (str) :
             - "To.NAME" : convert to name label.
             - "To.NUMBER" : convert to number label.
+
+        Returns
+        -------
+        str or int : converted value. (if To.NAME, return str, if To.NUMBER, return int)
         """
         if to == "Name":
             for name, number in self.label.items():
@@ -182,7 +191,7 @@ class Core():
             return self.label.get(value, -1)
         return None
 
-    def set_label(self, person):
+    def set_label(self, person: any) -> None:
         """
         This function sets the label dictionary.
         
@@ -213,7 +222,7 @@ class Core():
             for i in range(len(person)):
                 self.label[person[i]] = i
 
-    def set_directory(self, dict: dict):
+    def set_directory(self, dicto: dict) -> None:
         """
         This function sets the directory.
         
@@ -238,15 +247,19 @@ class Core():
         unlabeled : "unlabeled"
         model : "model"
         """
-        if "labeled" in dict:
-            self.labeled_dir = dict["labeled"]
-        if "unlabeled" in dict:
-            self.unlabeled_dir = dict["unlabeled"]
-        if "model" in dict:
-            self.model_dir = dict["model"]
+        assert isinstance(dicto, dict), "parameter must be dictionary."
+
+        if "labeled" in dicto:
+            self.labeled_dir = dicto["labeled"]
+        if "unlabeled" in dicto:
+            self.unlabeled_dir = dicto["unlabeled"]
+        if "model" in dicto:
+            self.model_dir = dicto["model"]
         
 
-    def _train(self, labeled: bool):
+    def _train(self, labeled: bool) -> None:
+        assert isinstance(labeled, bool), "parameter must be boolean."
+        
         if labeled:
             self._load_labeled()
         else:
@@ -258,7 +271,7 @@ class Core():
         for face in self.faces:
             for encoding in face.encodings:
                 numberLabel = self.convert_labelType(face.label, To.NUMBER)
-                if labeled and numberLabel == -1:
+                if labeled and numberLabel == -1: # 라벨링 데이터 학습인데 unknown이면 학습하지 않음
                     continue
                 t_names.append(numberLabel)
                 t_encodings.append(encoding)
@@ -271,15 +284,15 @@ class Core():
         self._save_model()
         print("Labeled training is done. The model is saved in the model directory.")
 
-    def train_labeled_data(self):
+    def train_labeled_data(self) -> None:
         self._train(As.LABELED)
 
-    def train_unlabeled_data(self):
+    def train_unlabeled_data(self) -> None:
         self._train(As.UNLABELED)
 
     
     @staticmethod
-    def _get_average(face: Face):
+    def _get_average(face: Face) -> np.array:
         """
         This function returns the average of the encodings.
         
@@ -287,10 +300,11 @@ class Core():
         ----------
         face (Face) : target face.
         """
+        assert isinstance(face, Face), "parameter must be Face class."
         return np.average(face.encodings, axis=0)
 
     @staticmethod
-    def _get_distance(encoding1, encoding2):
+    def _get_distance(encoding1: np.ndarray, encoding2: np.ndarray) -> float:
         """
         This function returns the distance between two encodings.
         
@@ -299,9 +313,12 @@ class Core():
         encoding1 (np.array) : encoding1.
         encoding2 (np.array) : encoding2.
         """
+        assert isinstance(encoding1, np.ndarray), "parameter must be numpy array."
+        assert isinstance(encoding2, np.ndarray), "parameter must be numpy array."
+
         return np.linalg.norm(encoding1 - encoding2)
 
-    def _isNotUnknown(self, encoding):
+    def _isNotUnknown(self, encoding) -> bool:
         """
         This function checks whether the encoding is unknown.
         
@@ -309,6 +326,7 @@ class Core():
         ----------
         encoding (np.array) : target encoding.
         """
+        assert isinstance(encoding, np.ndarray), "parameter must be numpy array."
         print("Checking whether the encoding is unknown...")
         min_distance = 1
         for face in self.faces:
@@ -327,8 +345,8 @@ class Core():
         print("모르는사람")
         return False # 모르는 사람이다
 
-    def predict(self, image) -> list:
-        predictions_dict = {}
+    def predict(self, image: np.ndarray) -> list:
+        assert isinstance(image, np.ndarray), "parameter must be numpy array."
 
         target_encodings = face_recognition.face_encodings(image)
         if len(target_encodings) == 0:
@@ -341,11 +359,11 @@ class Core():
             else:
                 result.append(-1)
         
-        return result # list 
+        return result
 
 
 
-    def predict_all(self):
+    def predict_all(self) -> dict:
         result = {}
         for filename in os.listdir(self.predict_dir):
             if self._isImage(filename) == False:
