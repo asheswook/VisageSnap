@@ -22,6 +22,11 @@ class To():
     NAME = "Name"
     NUMBER = "Number"
 
+@dataclass
+class As():
+    LABELED = True
+    UNLABELED = False
+
 # Make a class to semi-supervised the face recognition
 class Core():
     def __init__(self):
