@@ -35,7 +35,7 @@ class Core():
         ---------------------
         """
         _default_dir = os.getcwd()
-        self.faces = []
+        self.faces: list[Face] = []
 
         # Directory
         self.unlabeled_dir = os.path.join(_default_dir, "unlabeled")
@@ -46,6 +46,10 @@ class Core():
         self.predict_dir = os.path.join(_default_dir, "predict")
 
         self.label: dict = {}
+
+        self.threshold = 0.42
+
+        self.model = self._load_model()
 
     @staticmethod
     def _isImage(filename: str) -> bool:
@@ -108,15 +112,15 @@ class Core():
                 
                 # 같은 이름이 있는지 확인
                 face_found = False
-                for face in self.faces:
+                for i, face in enumerate(self.faces):
                     if face.label == label:
                         print("The label is already in the list: {}".format(filename))
                         # 동일한 인코딩이 있는지 확인
                         if np.array_equal(face.encodings, encodings):
                             print("The encoding is already in the list: {}".format(filename))
                             continue
-                        face.encodings = np.vstack((face.encodings, encodings))
-                        face.filenames.append(filename)
+                        self.faces[i].encodings = np.vstack((face.encodings, encodings))
+                        self.faces[i].filenames.append(filename)
                         face_found = True
                         break
                 
@@ -145,22 +149,19 @@ class Core():
     def _load_model(self) -> LabelPropagation:
         try:
             with open(self.model_dir, "rb") as f:
-                model, self.faces = pickle.load(f)
+                self.model, self.faces = pickle.load(f)
                 print("Model loaded.")
-                return model
+                return self.model
         except:
             print("There is no model in the model directory. create a new model.")
-            model = LabelPropagation()
+            self.model = LabelPropagation()
             self.faces = [] # 초기화
-            return model
+            return self.model
 
-    def _save_model(self, model):
-        if not os.path.exists(os.path.dirname(self.model_dir)):
-            os.makedirs(os.path.dirname(self.model_dir))
-        ## 다른 곳에도 폴더 체크 필요할듯
-
+    def _save_model(self):
+        data = (self.model, self.faces)
         with open(self.model_dir, "wb") as f:
-            pickle.dump((model, self.faces), f)
+            pickle.dump(data, f)
 
     def convert_labelType(self, value, to: str):
         """
@@ -265,35 +266,101 @@ class Core():
         t_encodings = np.array(t_encodings)
         t_names = np.array(t_names)
         
-        model = self._load_model()
         print("Training the labeled data...")
-        model.fit(t_encodings, t_names)
-        self._save_model(model)
+        self.model.fit(t_encodings, t_names)
+        self._save_model()
         print("Labeled training is done. The model is saved in the model directory.")
 
     def train_labeled_data(self):
-        self._train(True)
+        self._train(As.LABELED)
 
     def train_unlabeled_data(self):
-        self._train(False)
+        self._train(As.UNLABELED)
 
-    def predict(self, image):
-        try:
-            model = self._load_model()
-            encodings = face_recognition.face_encodings(image)
-            names = model.predict(encodings)
-            return names
-        except NotFittedError:
-            print("The model is not trained yet. Train the model first.")
+    
+    @staticmethod
+    def _get_average(face: Face):
+        """
+        This function returns the average of the encodings.
+        
+        Parameters
+        ----------
+        face (Face) : target face.
+        """
+        return np.average(face.encodings, axis=0)
+
+    @staticmethod
+    def _get_distance(encoding1, encoding2):
+        """
+        This function returns the distance between two encodings.
+        
+        Parameters
+        ----------
+        encoding1 (np.array) : encoding1.
+        encoding2 (np.array) : encoding2.
+        """
+        return np.linalg.norm(encoding1 - encoding2)
+
+    def _isNotUnknown(self, encoding):
+        """
+        This function checks whether the encoding is unknown.
+        
+        Parameters
+        ----------
+        encoding (np.array) : target encoding.
+        """
+        print("Checking whether the encoding is unknown...")
+        min_distance = 1
+        for face in self.faces:
+            print(face.label)
+            average = self._get_average(face) # 저장된 얼굴 평균 구하고
+            distance = self._get_distance(encoding, average) # 타겟과의 거리를 구한다
+            if distance < min_distance:
+                min_distance = distance
+
+        print("min_distance : ", min_distance)
+        print("ended")
+
+        if min_distance < self.threshold:
+            print("아는사람")
+            return True # 모르는 사람이 아니다
+        print("모르는사람")
+        return False # 모르는 사람이다
+
+    def predict(self, image) -> list:
+        predictions_dict = {}
+
+        target_encodings = face_recognition.face_encodings(image)
+        if len(target_encodings) == 0:
             return None
         
+        result = []
+        for target_encoding in target_encodings:
+            if self._isNotUnknown(target_encoding): # 모르는 사람이 아니면
+                result.append(self.model.predict([target_encoding])[0])
+            else:
+                result.append(-1)
+        
+        return result # list 
+
+
 
     def predict_all(self):
         result = {}
         for filename in os.listdir(self.predict_dir):
-            if self._isImage(filename):
-                image = face_recognition.load_image_file(os.path.join(self.predict_dir, filename))
-                numberLabel = self.predict(image)
-                nameLabel = self.convert_labelType(numberLabel, To.NAME)
-                result[filename] = nameLabel
+            if self._isImage(filename) == False:
+                return
+            
+            image = face_recognition.load_image_file(os.path.join(self.predict_dir, filename))
+            prediction = self.predict(image)
+
+            if prediction == None:
+                raise("There is no face in the image.")
+            
+            if len(prediction) == 1:
+                result[filename] = self.convert_labelType(prediction[0], To.NAME)
+            else:
+                result[filename] = []
+                for p in prediction:
+                    result[filename].append(self.convert_labelType(p, To.NAME))
         return result
