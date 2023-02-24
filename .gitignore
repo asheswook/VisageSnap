@@ -1,6 +1,11 @@
 # Binary
 .DS_Store
 
+# predict and model
+tests/
+predict/
+model/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
