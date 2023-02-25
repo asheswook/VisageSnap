@@ -8,7 +8,7 @@ Recognizes faces and trains models, brings in the pictures and provides identifi
 
 -   Recognize faces.
 -   Train the model through semi-supervised learning with labeled or unlabeled pictures.
--   Provides identification predictions and face classification for pictures.
+-   Predicts if the face belongs to someone it knows and whose face it is.
 
 ## Installation
 
