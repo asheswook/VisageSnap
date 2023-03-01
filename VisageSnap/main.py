@@ -263,7 +263,7 @@ class Core():
         t_encodings =[]
 
         for face in self.gen_faces():
-            for encoding in gen(face.encodings):
+            for encoding in face.encodings:
                 numberLabel = self.convert_labelType(face.label, To.NUMBER)
                 if labeled and numberLabel == -1: # 라벨링 데이터 학습인데 unknown이면 학습하지 않음
                     continue
