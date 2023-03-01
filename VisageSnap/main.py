@@ -224,17 +224,20 @@ class Core():
         dict = {
             "labeled": "labeled",
             "unlabeled": "unlabeled",
-            "model": "model"
+            "model": "model",
+            "predict": "predict"
         }
         - labeled : directory of the labeled data
         - unlabeled : directory of the unlabeled data
         - model : directory of the model
+        - predict : directory of the predict data
 
         Default
         -------
         labeled : "labeled"
         unlabeled : "unlabeled"
         model : "model"
+        predict : "predict"
         """
         assert isinstance(dicto, dict), "parameter must be dictionary."
 
@@ -244,6 +247,8 @@ class Core():
             self.unlabeled_dir = dicto["unlabeled"]
         if "model" in dicto:
             self.model_dir = dicto["model"]
+        if "predict" in dicto:
+            self.predict_dir = dicto["predict"]
         
 
     def _train(self, labeled: bool) -> None:
