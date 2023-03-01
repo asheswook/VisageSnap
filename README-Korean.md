@@ -1,5 +1,7 @@
 # VisageSnap
 
+![Release](https://shields.io/github/v/release/asheswook/VisageSnap?display_name=tag&sort=semver) ![build](https://img.shields.io/github/actions/workflow/status/asheswook/VisageSnap/docker-workflow.yml?branch=main)
+
 [English](README.md) | **한국어**
 
 사진에서 얼굴을 감지하고 준지도 학습 (반지도 학습)을 통해서 모델을 훈련시키고, 얼굴을 분류합니다.

@@ -1,5 +1,7 @@
 # VisageSnap
 
+![Release](https://shields.io/github/v/release/asheswook/VisageSnap?display_name=tag&sort=semver) ![build](https://img.shields.io/github/actions/workflow/status/asheswook/VisageSnap/docker-workflow.yml?branch=main)
+
 **English** | [한국어](README-Korean.md)
 
 Recognizes faces and trains models, brings in the pictures and provides identification predictions and face classification. It also performs semi-supervised learning.
