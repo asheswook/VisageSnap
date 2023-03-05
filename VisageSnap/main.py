@@ -241,14 +241,22 @@ class Core():
         """
         assert isinstance(dicto, dict), "parameter must be dictionary."
 
-        if "labeled" in dicto:
-            self.labeled_dir = dicto["labeled"]
-        if "unlabeled" in dicto:
-            self.unlabeled_dir = dicto["unlabeled"]
-        if "model" in dicto:
-            self.model_dir = dicto["model"]
-        if "predict" in dicto:
-            self.predict_dir = dicto["predict"]
+        def _set_dir(key: str, value: str) -> None:
+            if value[:1] == "/":
+                dicto[key] = value
+            else:
+                dicto[key] = os.path.join(os.getcwd(), value)
+
+        for key, value in dicto.items():
+            if key == "labeled":
+                _set_dir(key, value)
+            elif key == "unlabeled":
+                _set_dir(key, value)
+            elif key == "model":
+                _set_dir(key, value)
+            elif key == "predict":
+                _set_dir(key, value)
+            
         
 
     def _train(self, labeled: bool) -> None:
