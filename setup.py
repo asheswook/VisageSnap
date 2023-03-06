@@ -12,7 +12,7 @@ requirements = [
 
 setuptools.setup(
     name='VisageSnap',
-    version='0.2.2',
+    version='0.2.3',
     author='Jaewook Lee',
     author_email='me@jwlee.xyz',
     description='Face Classification package',
