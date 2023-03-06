@@ -155,6 +155,9 @@ class Core():
             return self.model
 
     def _save_model(self) -> None:
+        if not os.path.exists(os.path.join(os.getcwd(), "model")):
+            os.mkdir(os.path.join(os.getcwd(), "model"))
+            
         data = (self.model, self.faces)
         with open(self.model_dir, "wb") as f:
             pickle.dump(data, f)
