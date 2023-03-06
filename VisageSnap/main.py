@@ -97,30 +97,32 @@ class Core():
                 print("Loading labeled data: {}".format(filename))
                 label = (filename.split(".")[0]).split("-")[0] # 파일 형식은 이름-번호.jpg
                 image = face_recognition.load_image_file(os.path.join(self.labeled_dir, filename))
-                encodings = face_recognition.face_encodings(image)[0]
+                encodings = face_recognition.face_encodings(image)
+                encoding = encodings[0]
 
                 # 만약 두개의 얼굴이 같은 사진에 있다면
-                if len(face_recognition.face_encodings(image)) > 1:
+                if len(encodings) > 1:
                     print("There are more than one face in the image: {}".format(filename))
                     continue
-                
-                # 같은 이름이 있는지 확인
-                face_found = False
-                for i, face in enumerate(self.gen_faces()):
-                    if face.label == label:
-                        print("The label is already in the list: {}".format(filename))
-                        # 동일한 인코딩이 있는지 확인
-                        if np.array_equal(face.encodings, encodings):
-                            print("The encoding is already in the list: {}".format(filename))
-                            continue
-                        self.faces[i].encodings = np.vstack((face.encodings, encodings))
-                        self.faces[i].filenames.append(filename)
-                        face_found = True
-                        break
-                
-                if not face_found:
-                    self.faces.append(Face(label, encodings, [filename]))
 
+                # 만약 같은 얼굴이 있다면
+                FACE_FOUND = False
+                for i, face in enumerate(self.faces): #얼굴 검색
+                    if face.label == label: # 같은 얼굴이라면
+                        for faceEncoding in face.encodings: 
+                            # 인코딩 같은게 있는지 확인
+                            if np.array_equal(faceEncoding, encoding):
+                                print("There is a same face in the image: {}".format(filename))
+                                continue
+
+                            # 인코딩이 다르다면 얼굴에 추가
+                            self.faces[i].encodings.append(encoding)
+                            self.faces[i].filenames.append(filename)
+                            FACE_FOUND = True
+
+                if not FACE_FOUND:
+                    self.faces.append(Face(label, [encoding], [filename]))
+                    
 
     def _load_unlabeled(self) -> None:
         """
