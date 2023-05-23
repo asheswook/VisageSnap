@@ -116,3 +116,7 @@ _Default Directory:_
     "model": "model"
 }
 ```
+
+## Acknowledgement
+* [scikit-learn](https://scikit-learn.org/stable/)
+* [face_recognition](https://github.com/ageitgey/face_recognition)
