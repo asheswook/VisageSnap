@@ -8,17 +8,17 @@
 
 ## Feature
 
--   사진에서 얼굴을 인식합니다.
--   준지도 학습을 통해 라벨링된 사진과 라벨링되지 않은 사진으로 모델을 훈련시킬 수 있습니다.
--   해당하는 얼굴이 모르는 사람의 얼굴인지, 아는 사람이라면 누구인지를 예측합니다.
+- 사진에서 얼굴을 인식합니다.
+- 준지도 학습을 통해 라벨링된 사진과 라벨링되지 않은 사진으로 모델을 훈련시킬 수 있습니다.
+- 해당하는 얼굴이 모르는 사람의 얼굴인지, 아는 사람이라면 누구인지를 예측합니다.
 
 ## Installation
 
 ### Requirements
 
--   Python 3.9+
-    -   3.9 이하 버전은 테스트되지 않았으며, pip를 통해 pickle 모듈을 설치해야 할 수 있습니다.
--   dilb
+- Python 3.9+
+  - 3.9 이하 버전은 테스트되지 않았으며, pip를 통해 pickle 모듈을 설치해야 할 수 있습니다.
+- dilb
 
 먼저 dilb를 설치해야 합니다. [이 곳](https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf)의 지시에 따라 설치할 수 있습니다.
 
@@ -118,3 +118,29 @@ _기본 디렉토리:_
     "model": "model"
 }
 ```
+
+### 기타 메소드
+
+**얼굴의 정보 얻기**
+
+`get_faceObject` 메소드를 이용하여 faceObject를 얻을 수 있습니다. faceObject는 얼굴 정보를 포함하고 있는 dataclass입니다.
+
+```python
+from visagesnap import From
+# From.LABEL, From.FILENAME
+```
+
+```python
+face_tom = vs.get_faceObject(From.LABEL, "Tom")
+face_tom = vs.get_faceObject(From.FILENAME, "Tom-123.png")
+# face_tom = Face(label, encodings, filenames)
+
+name: str = face_tom.label
+encodings: NDArray = face_tom.encodings
+filenames: list = face_tom.filenames
+```
+
+## Acknowledgement
+
+- [scikit-learn](https://scikit-learn.org/stable/)
+- [face_recognition](https://github.com/ageitgey/face_recognition)

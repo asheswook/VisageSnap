@@ -8,17 +8,17 @@ Recognizes faces and trains models, brings in the pictures and provides identifi
 
 ## Feature
 
--   Recognize faces.
--   Train the model through semi-supervised learning with labeled or unlabeled pictures.
--   Predicts if the face belongs to someone it knows and whose face it is.
+- Recognize faces.
+- Train the model through semi-supervised learning with labeled or unlabeled pictures.
+- Predicts if the face belongs to someone it knows and whose face it is.
 
 ## Installation
 
 ### Requirements
 
--   Python 3.9+
-    -   Versions below 3.9 have not been tested, and pickle module must be installed via pip.
--   dilb
+- Python 3.9+
+  - Versions below 3.9 have not been tested, and pickle module must be installed via pip.
+- dilb
 
 First, you need to install dilb. You can install it by following the instructions on the [here](https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf).
 
@@ -117,6 +117,28 @@ _Default Directory:_
 }
 ```
 
+### Others
+
+**To get the face information**
+
+You can get the faceObject by using `get_faceObject` method. The faceObject is a dataclass that contains the face information.
+
+```python
+from visagesnap import From
+# From.LABEL, From.FILENAME
+```
+
+```python
+face_tom = vs.get_faceObject(From.LABEL, "Tom")
+face_tom = vs.get_faceObject(From.FILENAME, "Tom-123.png")
+# face_tom = Face(label, encodings, filenames)
+
+name: str = face_tom.label
+encodings: NDArray = face_tom.encodings
+filenames: list = face_tom.filenames
+```
+
 ## Acknowledgement
-* [scikit-learn](https://scikit-learn.org/stable/)
-* [face_recognition](https://github.com/ageitgey/face_recognition)
+
+- [scikit-learn](https://scikit-learn.org/stable/)
+- [face_recognition](https://github.com/ageitgey/face_recognition)
