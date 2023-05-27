@@ -265,9 +265,15 @@ class Trainer(FaceProcessor):
     def train_unlabeled_data(self) -> None:
         self.__train(As.UNLABELED)
 
+class Predictor(FaceProcessor):
+    def __init__(self, modelManager: ModelManager = None):
+        super().__init__()
+
+        self.modelManager = modelManager
+        self.threshold = 0.48
 
     @staticmethod
-    def _get_average(face: Face) -> np.array:
+    def __get_average(face: Face) -> np.array:
         """
         This function returns the average of the encodings.
 
@@ -279,7 +285,7 @@ class Trainer(FaceProcessor):
         return np.average(face.encodings, axis=0)
 
     @staticmethod
-    def _get_distance(encoding1: np.ndarray, encoding2: np.ndarray) -> float:
+    def __get_distance(encoding1: np.ndarray, encoding2: np.ndarray) -> float:
         """
         This function returns the distance between two encodings.
 
@@ -293,7 +299,7 @@ class Trainer(FaceProcessor):
 
         return np.linalg.norm(encoding1 - encoding2)
 
-    def _isNotUnknown(self, encoding) -> bool:
+    def __isNotUnknown(self, encoding) -> bool:
         """
         This function checks whether the encoding is unknown.
 
@@ -306,8 +312,8 @@ class Trainer(FaceProcessor):
         min_distance = 1
         for face in self.gen_faces():
             print(face.label)
-            average = self._get_average(face) # 저장된 얼굴 평균 구하고
-            distance = self._get_distance(encoding, average) # 타겟과의 거리를 구한다
+            average = self.__get_average(face) # 저장된 얼굴 평균 구하고
+            distance = self.__get_distance(encoding, average) # 타겟과의 거리를 구한다
             if distance < min_distance:
                 min_distance = distance
 
@@ -315,7 +321,7 @@ class Trainer(FaceProcessor):
             return True # 모르는 사람이 아니다
         return False # 모르는 사람이다
 
-    def predict(self, image: np.ndarray) -> list:
+    def __predict(self, image: np.ndarray) -> list:
         assert isinstance(image, np.ndarray), "parameter must be numpy array."
 
         target_encodings = face_recognition.face_encodings(image)
@@ -324,8 +330,8 @@ class Trainer(FaceProcessor):
 
         result = []
         for target_encoding in target_encodings:
-            if self._isNotUnknown(target_encoding): # 모르는 사람이 아니면
-                result.append(self.model.predict([target_encoding])[0])
+            if self.__isNotUnknown(target_encoding): # 모르는 사람이 아니면
+                result.append(self.modelManager.model.predict([target_encoding])[0])
             else:
                 result.append(-1)
 
@@ -335,11 +341,11 @@ class Trainer(FaceProcessor):
 
     def predict_all(self) -> dict:
         result = {}
-        for filename in os.listdir(self.predict_dir):
-            if self._isImage(filename) == False:
+        for filename in os.listdir(self.dir["predict"]):
+            if isimage(filename) == False:
                 return
 
-            image = face_recognition.load_image_file(os.path.join(self.predict_dir, filename))
+            image = face_recognition.load_image_file(os.path.join(self.dir["predict"], filename))
             prediction = self.predict(image)
 
             if prediction == None:
