@@ -358,3 +358,28 @@ class Predictor(FaceProcessor):
                 for p in prediction:
                     result[filename].append(self.convert_labelType(p, To.NAME))
         return result
+    
+class Core(FaceProcessor):
+    def __init__(self, modelManager: ModelManager = None):
+        super().__init__()
+
+        if modelManager is None:
+            self.modelManager = ModelManager() # create New ModelManager Object
+        else:
+            self.modelManager = modelManager # or use the given ModelManager Object
+
+
+        self.trainer = Trainer(modelManager)
+        self.predictor = Predictor(modelManager)
+
+    def train_labeled_data(self) -> None:
+        self.trainer.train_labeled_data()
+
+    def train_unlabeled_data(self) -> None:
+        self.trainer.train_unlabeled_data()
+
+    def predict(self, image: np.ndarray) -> list:
+        return self.predictor.predict(image)
+    
+    def predict_all(self) -> dict:
+        return self.predictor.predict_all()
