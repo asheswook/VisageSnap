@@ -15,3 +15,23 @@ def gen(target: list[any]) -> any:
 def absp(value: str) -> str:
     return os.path.join(os.getcwd(), value)
 
+def isimage(filename: str) -> bool:
+    """
+    This function checks if the file is an image file.
+
+    Parameters
+    ----------
+    filename (str) : target filename.
+    """
+    assert isinstance(filename, str), "filename must be a string."
+
+    list = [
+        ".jpg",
+        ".png",
+        ".jpeg"
+        ]
+
+    for i in list:
+        if filename.endswith(i):
+            return True
+    return False
