@@ -7,26 +7,16 @@ from sklearn.exceptions import NotFittedError
 import pickle
 from .classes import *
 from .utils import *
+    
+def singleton(class_):
+    instances = {}
 
+    def get_instance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+        return instances[class_]
 
-# Make a class to semi-supervised the face recognition
-class Core():
-    def __init__(self):
-        """
-        VisageSnap Core Class
-        ---------------------
-        """
-        _default_dir = os.getcwd()
-        self.faces: list[Face] = []
-
-        # Directory
-        self.unlabeled_dir = os.path.join(_default_dir, "unlabeled")
-        self.labeled_dir = os.path.join(_default_dir, "labeled")
-
-        self.model_dir = os.path.join(_default_dir, "model", "face_model.pkl")
-
-        self.predict_dir = os.path.join(_default_dir, "predict")
-
+    return get_instance
         self.label: dict = {}
 
         self.threshold = 0.42
