@@ -169,50 +169,63 @@ class ModelManager:
         data = (self.model, self.fp.faces)
         with open(self.fp.dir["model"], "wb") as f:
             pickle.dump(data, f)
+
+@singleton
+class ImageLoader(FaceProcessor):
+    def __init__(self):
+        super().__init__()
+    
+    def __load_labeled(self) -> None: # 미리 주어지는 데이터는 한 사진에 한 사람만 있어야 한다.
         """
-        This function sets the directory.
-
-        Parameters
-        ----------
-        dict (dict) : directory dictionary.
-
-        Example
-        -------
-        dict = {
-            "labeled": "labeled",
-            "unlabeled": "unlabeled",
-            "model": "model",
-            "predict": "predict"
-        }
-        - labeled : directory of the labeled data
-        - unlabeled : directory of the unlabeled data
-        - model : directory of the model
-        - predict : directory of the predict data
-
-        Default
-        -------
-        labeled : "labeled"
-        unlabeled : "unlabeled"
-        model : "model"
-        predict : "predict"
+        This function loads the labeled data from the labeled directory.
         """
-        assert isinstance(dicto, dict), "parameter must be dictionary."
+        for filename in gen(os.listdir(self.dir["labeled"])):
+            if isimage(filename):
+                label = (filename.split(".")[0]).split("-")[0] # 파일 형식은 이름-번호.jpg
+                image = face_recognition.load_image_file(os.path.join(self.dir["labeled"], filename))
+                encodings = face_recognition.face_encodings(image)
+                encoding = encodings[0]
+    
+                # 만약 두개의 얼굴이 같은 사진에 있다면
+                if len(encodings) > 1:
+                    # 두개 이상의 얼굴... 시마이
+                    continue
 
-        def _set_dir(key: str, value: str) -> None:
-            if value[:1] == "/":
-                dicto[key] = value
-            else:
-                dicto[key] = os.path.join(os.getcwd(), value)
+                # 만약 같은 얼굴이 있다면
+                FACE_FOUND = False
+                for i, face in enumerate(self.gen_faces): #얼굴 검색
+                    if face.label == label: # 같은 얼굴이라면
+                        for faceEncoding in face.encodings:
+                            # 인코딩 같은게 있는지 확인
+                            if np.array_equal(faceEncoding, encoding):
+                                # 같은 게 있음
+                                continue
 
-        for key, value in dicto.items():
-            if key == "labeled":
-                _set_dir(key, value)
-            elif key == "unlabeled":
-                _set_dir(key, value)
-            elif key == "model":
-                _set_dir(key, value)
-            elif key == "predict":
-                _set_dir(key, value)
+                            # 인코딩이 다르다면 얼굴에 추가
+                            self.faces[i].encodings.append(encoding)
+                            self.faces[i].filenames.append(filename)
+                            FACE_FOUND = True
+
+                if not FACE_FOUND:
+                    self.faces.append(Face(label, [encoding], [filename]))
+
+
+    def __load_unlabeled(self) -> None:
+        """
+        This function loads the unlabeled data from the unlabeled directory.
+        """
+        for filename in gen(os.listdir(self.dir["unlabeled"])):
+            if self._isImage(filename):
+                image = face_recognition.load_image_file(os.path.join(self.dir["unlabeled"], filename))
+                encodings = face_recognition.face_encodings(image)
+
+                if len(encodings) == 0:
+                    # 얼굴 감지 안됨
+                    continue
+
+                for encoding in encodings:
+                    self.faces.append(Face("unknown", encoding, [filename]))
+
 
 
 
