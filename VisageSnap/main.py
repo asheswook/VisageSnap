@@ -17,58 +17,74 @@ def singleton(class_):
         return instances[class_]
 
     return get_instance
+    
+@singleton
+class FaceProcessor:
+    def __init__(self):
+        self.__directory = {
+            "labeled": absp("labeled"),
+            "unlabeled": absp("unlabeled"),
+            "model": absp("model"),
+            "predict": absp("predict")
+        }
+        self.faces: list[Face] = []
         self.label: dict = {}
-
-        self.threshold = 0.42
-
-        self.model = self._load_model()
-
-    @staticmethod
-    def _isImage(filename: str) -> bool:
+        
+    @property
+    def dir(self) -> dict:
         """
-        This function checks if the file is an image file.
+        This function returns the directory.
 
-        Parameters
-        ----------
-        filename (str) : target filename.
+        Returns
+        -------
+        dict (dict) : directory dictionary.
+
+        Example
+        -------
+        dict = {
+            "labeled": "labeled",
+            "unlabeled": "unlabeled",
+            "model": "model",
+            "predict": "predict"
+        }
+        - labeled : directory of the labeled data
+        - unlabeled : directory of the unlabeled data
+        - model : directory of the model
+        - predict : directory of the predict data
+
+        Default
+        -------
+        labeled : "labeled"
+        unlabeled : "unlabeled"
+        model : "model"
+        predict : "predict"
         """
-        assert isinstance(filename, str), "filename must be a string."
+        return self.__directory
+    
+    @dir.setter
+    def dir(self, dicto: dict) -> None:
+        def _set_dir(key: str, value: str):
+            # Check if directory exists
+            if os.path.isdir(value) == False:
+                raise("The directory does not exist.")
+            
+            # Check if value is absoulte path or relative path. if relative, convert to absolute path.
+            value = absp(value) if os.path.isabs(value) is False else value
 
-        list = [
-            ".jpg",
-            ".png",
-            ".jpeg"
-            ]
+            self.__directory[key] = value
 
-        for i in list:
-            if filename.endswith(i):
-                return True
-        return False
-
-    def get_faceObject(self, target: str, value: str) -> Face:
-        """
-        This function returns the face object with the given label.
-
-        Parameters
-        ----------
-        target:
-            - "From.LABEL" : label of the face object. (name of the person)
-            - "From.FILENAME" : filename of the face object.
-
-        value (str) : value of the target.
-        """
-        assert isinstance(target, str), "target must be 'From.LABEL' or 'From.FILENAME'."
-        assert isinstance(value, str), "value must be a string."
-
-        for face in self.gen_faces():
-            if target == "Label":
-                if face.label == value:
-                    return face
-            elif target == "Filename":
-                if value in face.filenames:
-                    return face
-        return None
-
+        for key, value in dicto.items():
+            if key == "labeled":
+                _set_dir(key, value)
+            elif key == "unlabeled":
+                _set_dir(key, value)
+            elif key == "model":
+                _set_dir(key, value)
+            elif key == "predict":
+                _set_dir(key, value)
+            else:
+                raise("The key is not valid.")
+            
     def gen_faces(self) -> list[Face]:
         """
         This function returns the face list.
@@ -76,78 +92,6 @@ def singleton(class_):
         result = []
         for face in self.faces:
             yield face
-
-
-    def _load_labeled(self) -> None: # 미리 주어지는 데이터는 한 사진에 한 사람만 있어야 한다.
-        """
-        This function loads the labeled data from the labeled directory.
-        """
-        for filename in gen(os.listdir(self.labeled_dir)):
-            if self._isImage(filename):
-                label = (filename.split(".")[0]).split("-")[0] # 파일 형식은 이름-번호.jpg
-                image = face_recognition.load_image_file(os.path.join(self.labeled_dir, filename))
-                encodings = face_recognition.face_encodings(image)
-                encoding = encodings[0]
-
-                # 만약 두개의 얼굴이 같은 사진에 있다면
-                if len(encodings) > 1:
-                    # 두개 이상의 얼굴... 시마이
-                    continue
-
-                # 만약 같은 얼굴이 있다면
-                FACE_FOUND = False
-                for i, face in enumerate(self.faces): #얼굴 검색
-                    if face.label == label: # 같은 얼굴이라면
-                        for faceEncoding in face.encodings:
-                            # 인코딩 같은게 있는지 확인
-                            if np.array_equal(faceEncoding, encoding):
-                                # 같은 게 있음
-                                continue
-
-                            # 인코딩이 다르다면 얼굴에 추가
-                            self.faces[i].encodings.append(encoding)
-                            self.faces[i].filenames.append(filename)
-                            FACE_FOUND = True
-
-                if not FACE_FOUND:
-                    self.faces.append(Face(label, [encoding], [filename]))
-
-
-    def _load_unlabeled(self) -> None:
-        """
-        This function loads the unlabeled data from the unlabeled directory.
-        """
-        for filename in gen(os.listdir(self.unlabeled_dir)):
-            if self._isImage(filename):
-                image = face_recognition.load_image_file(os.path.join(self.unlabeled_dir, filename))
-                encodings = face_recognition.face_encodings(image)
-
-                if len(encodings) == 0:
-                    # 얼굴 감지 안됨
-                    continue
-
-                for encoding in encodings:
-                    self.faces.append(Face("unknown", encoding, [filename]))
-
-
-    def _load_model(self) -> LabelPropagation:
-        try:
-            with open(self.model_dir, "rb") as f:
-                self.model, self.faces = pickle.load(f)
-                print("Model loaded.")
-                return self.model
-        except: # 새 모델 만들기
-            self.model = LabelPropagation()
-            self.faces = [] # 초기화
-            return self.model
-
-    def _save_model(self) -> None:
-        if not os.path.exists(os.path.join(os.getcwd(), "model")):
-            os.mkdir(os.path.join(os.getcwd(), "model"))
-
-        data = (self.model, self.faces)
-        with open(self.model_dir, "wb") as f:
-            pickle.dump(data, f)
 
     def convert_labelType(self, value, to: str) -> any:
         """
