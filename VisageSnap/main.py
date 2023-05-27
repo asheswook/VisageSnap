@@ -227,15 +227,20 @@ class ImageLoader(FaceProcessor):
                     self.faces.append(Face("unknown", encoding, [filename]))
 
 
+class Trainer(FaceProcessor):
+    def __init__(self, modelManager: ModelManager = None):
+        super().__init__()
+        
+        self.modelManager = modelManager
+        self.il = ImageLoader()
 
-
-    def _train(self, labeled: bool) -> None:
+    def __train(self, labeled: bool) -> None:
         assert isinstance(labeled, bool), "parameter must be boolean."
 
         if labeled:
-            self._load_labeled()
+            self.il.__load_labeled()
         else:
-            self._load_unlabeled()
+            self.il.__load_unlabeled()
 
         t_names = []
         t_encodings =[]
@@ -251,15 +256,14 @@ class ImageLoader(FaceProcessor):
         t_encodings = np.array(t_encodings)
         t_names = np.array(t_names)
 
-        self.model.fit(t_encodings, t_names)
+        self.modelManager.model.fit(t_encodings, t_names)
         self._save_model()
 
-
     def train_labeled_data(self) -> None:
-        self._train(As.LABELED)
+        self.__train(As.LABELED)
 
     def train_unlabeled_data(self) -> None:
-        self._train(As.UNLABELED)
+        self.__train(As.UNLABELED)
 
 
     @staticmethod
