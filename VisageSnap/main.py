@@ -146,8 +146,29 @@ class FaceProcessor:
         elif type(person) == list:
             for i in range(len(person)):
                 self.label[person[i]] = i
+            
+class ModelManager:
+    def __init__(self):
+        self.fp = FaceProcessor()
 
-    def set_directory(self, dicto: dict) -> None:
+    def load(self) -> LabelPropagation:
+        try:
+            with open(self.fp.dir["model"], "rb") as f:
+                self.model, self.fp.faces = pickle.load(f)
+                print("Model loaded.")
+                return self.model
+        except: # 새 모델 만들기
+            self.model = LabelPropagation()
+            self.fp.faces = [] # 초기화
+            return self.model
+        
+    def save(self) -> None:
+        if not os.path.exists(absp("model")):
+            os.mkdir(absp("model"))
+
+        data = (self.model, self.fp.faces)
+        with open(self.fp.dir["model"], "wb") as f:
+            pickle.dump(data, f)
         """
         This function sets the directory.
 
