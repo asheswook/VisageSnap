@@ -11,3 +11,7 @@ def gen(target: list[any]) -> any:
     assert isinstance(target, list | np.ndarray), "target must be a list or numpy.ndarray."
     for i in target:
         yield i
+
+def absp(value: str) -> str:
+    return os.path.join(os.getcwd(), value)
+
