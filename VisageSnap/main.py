@@ -382,17 +382,20 @@ class Predictor(FaceProcessor):
         return result
     
 class Core(FaceProcessor):
-    def __init__(self, modelManager: ModelManager = None):
-        super().__init__()
+    """
+    VisageSnap Core Class
+    ---------------------
+    """
+    def __init__(self, globalState: GlobalState = None, directory: Directory = None):
+        self.__state = GlobalState([], {}, None) if globalState is None else globalState
+        self.__directory = Directory("labeled", "unlabeled", "model", "predict") if directory is None else directory
 
-        if modelManager is None:
-            self.modelManager = ModelManager() # create New ModelManager Object
-        else:
-            self.modelManager = modelManager # or use the given ModelManager Object
+        super().__init__(self.__state)
 
-
-        self.trainer = Trainer(modelManager)
-        self.predictor = Predictor(modelManager)
+        self.modelHandler = ModelHandler(self.__state, self.__directory)
+        self.imageLoader = ImageLoader(self.__state, self.__directory)
+        self.trainer = Trainer(self.__state, self.__directory, self.imageLoader, self.modelHandler)
+        self.predictor = Predictor(self.__state, self.__directory)
 
     def train_labeled_data(self) -> None:
         self.trainer.train_labeled_data()
@@ -400,8 +403,5 @@ class Core(FaceProcessor):
     def train_unlabeled_data(self) -> None:
         self.trainer.train_unlabeled_data()
 
-    def predict(self, image: np.ndarray) -> list:
-        return self.predictor.predict(image)
-    
     def predict_all(self) -> dict:
         return self.predictor.predict_all()
