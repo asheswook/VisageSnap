@@ -250,19 +250,21 @@ class ImageLoader:
 
     
 class Trainer(FaceProcessor):
-    def __init__(self, modelManager: ModelManager = None):
-        super().__init__()
-        
-        self.modelManager = modelManager
-        self.il = ImageLoader()
+    def __init__(self, globalState: GlobalState = None, directory: Directory = None, imageLoader: ImageLoader = None, modelHandler: ModelHandler = None):
+        super().__init__(globalState)
+
+        self.__state = globalState
+        self.__directory = directory
+        self.imageLoader = ImageLoader(self.__state, self.__directory) if imageLoader is None else imageLoader
+        self.modelHandler = ModelHandler(self.__state, self.__directory) if modelHandler is None else modelHandler
 
     def __train(self, labeled: bool) -> None:
         assert isinstance(labeled, bool), "parameter must be boolean."
 
         if labeled:
-            self.il.__load_labeled()
+            self.imageLoader.load_labeled()
         else:
-            self.il.__load_unlabeled()
+            self.imageLoader.load_unlabeled()
 
         t_names = []
         t_encodings =[]
@@ -278,8 +280,8 @@ class Trainer(FaceProcessor):
         t_encodings = np.array(t_encodings)
         t_names = np.array(t_names)
 
-        self.modelManager.model.fit(t_encodings, t_names)
-        self._save_model()
+        self.__state.model.fit(t_encodings, t_names)
+        self.modelHandler.save()
 
     def train_labeled_data(self) -> None:
         self.__train(As.LABELED)
