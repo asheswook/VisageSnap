@@ -161,61 +161,37 @@ class DirectoryManager:
             else:
                 raise("The key is not valid.")
             
-    def gen_faces(self) -> list[Face]:
-        """
-        This function returns the face list.
-        """
-        result = []
-        for face in self.faces:
-            yield face
 
-    def convert_labelType(self, value, to: str) -> any:
-        """
-        This function converts the label type. (numberLabel -> nameLabel, nameLabel -> numberLabel)
+class ModelHandler:
+    def __init__(self, globalState: GlobalState = None, directory: Directory = None):
+        self.__state = globalState
+        self.__directory = directory
+        self.__state.model = self.load()
 
-        Parameters
-        ----------
-        value (str or int) : target value.
-        to (str) :
-            - "To.NAME" : convert to name label.
-            - "To.NUMBER" : convert to number label.
+    def load(self) -> LabelPropagation:
+        try:
+            model_path = os.path.join(self.__directory.model, "face_model.pkl")
 
-        Returns
-        -------
-        str or int : converted value. (if To.NAME, return str, if To.NUMBER, return int)
-        """
-        if to == "Name":
-            for name, number in self.label.items():
-                if number == value:
-                    return name
-        elif to == "Number":
-            return self.label.get(value, -1)
-        return None
+            with open(model_path, "rb") as f:
+                self.__state.model, self.__state.faces = pickle.load(f)
+                print("Model loaded.")
 
-    def set_label(self, person: any) -> None:
-        """
-        This function sets the label dictionary.
+        except:
+            print("Model not found. Creating new model...")
+            self.__state.model = LabelPropagation()
+            self.__state.faces = []  # 초기화
 
-        Parameters
-        ----------
-        person (list or dict) : label list or dictionary.
+        return self.__state.model
+        
+    def save(self) -> None:
+        model_path = os.path.join(self.__directory.model, "face_model.pkl")
 
-        Example
-        -------
-        person = ["name1", "name2", "name3", ...]
+        # Create directory if not exists
+        os.mkdir(self.__directory.model) if not os.path.exists(self.__directory.model) else None
 
-        OR
+        with open(model_path, "wb") as f:
+            pickle.dump((self.__state.model, self.__state.faces), f)  # Save as tuple
 
-        person = {
-            "name1": 0,
-            "name2": 1,
-            "name3": 2,
-            ...
-        }
-
-        - name1, name2, name3, ... : name of the person
-        - 0, 1, 2, ... : number label (MUST NOT BE -1)
-        """
 
         if type(person) == dict:
             self.label = person
