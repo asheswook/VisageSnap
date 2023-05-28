@@ -290,10 +290,11 @@ class Trainer(FaceProcessor):
         self.__train(As.UNLABELED)
 
 class Predictor(FaceProcessor):
-    def __init__(self, modelManager: ModelManager = None):
-        super().__init__()
+    def __init__(self, globalState: GlobalState = None, directory: Directory = None):
+        super().__init__(globalState)
 
-        self.modelManager = modelManager
+        self.__state = globalState
+        self.__directory = directory
         self.threshold = 0.48
 
     @staticmethod
@@ -335,7 +336,6 @@ class Predictor(FaceProcessor):
 
         min_distance = 1
         for face in self.gen_faces():
-            print(face.label)
             average = self.__get_average(face) # 저장된 얼굴 평균 구하고
             distance = self.__get_distance(encoding, average) # 타겟과의 거리를 구한다
             if distance < min_distance:
@@ -355,22 +355,20 @@ class Predictor(FaceProcessor):
         result = []
         for target_encoding in target_encodings:
             if self.__isNotUnknown(target_encoding): # 모르는 사람이 아니면
-                result.append(self.modelManager.model.predict([target_encoding])[0])
+                result.append(self.__state.model.predict([target_encoding])[0])
             else:
                 result.append(-1)
 
         return result
 
-
-
     def predict_all(self) -> dict:
         result = {}
-        for filename in os.listdir(self.dir["predict"]):
+        for filename in os.listdir(self.__directory.predict):
             if isimage(filename) == False:
                 return
 
-            image = face_recognition.load_image_file(os.path.join(self.dir["predict"], filename))
-            prediction = self.predict(image)
+            image = face_recognition.load_image_file(os.path.join(self.__directory.predict, filename))
+            prediction = self.__predict(image)
 
             if prediction == None:
                 raise("There is no face in the image.")
