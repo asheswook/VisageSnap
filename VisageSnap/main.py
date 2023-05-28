@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.semi_supervised import LabelPropagation
 from sklearn.exceptions import NotFittedError
 import pickle
+from typing import Generator, Union
 from .classes import *
 from .utils import *
     
