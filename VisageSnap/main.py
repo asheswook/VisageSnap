@@ -95,6 +95,10 @@ class FaceProcessor:
                     return face
         return None
 
+class DirectoryManager:
+    def __init__(self, directory: Directory):
+        self.__directory = directory
+
     @property
     def dir(self) -> dict:
         """
@@ -136,7 +140,14 @@ class FaceProcessor:
             # Check if value is absoulte path or relative path. if relative, convert to absolute path.
             value = absp(value) if os.path.isabs(value) is False else value
 
-            self.__directory[key] = value
+            if key == "labeled":
+                self.__directory.labeled = value
+            elif key == "unlabeled":
+                self.__directory.unlabeled = value
+            elif key == "model":
+                self.__directory.model = value
+            elif key == "predict":
+                self.__directory.predict = value
 
         for key, value in dicto.items():
             if key == "labeled":
