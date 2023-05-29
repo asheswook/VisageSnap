@@ -73,13 +73,13 @@ vs.load_model()
 
 이제 디렉토리에 있는 사진 파일을 통해 모델을 학습시킵니다.
 
-```
+```python
 vs.train_labeled_data()
 ```
 
 만약 라벨링되지 않은 사진 파일로 모델을 학습시키고 싶다면 다음과 같이 할 수 있습니다.
 
-```
+```python
 vs.train_unlabeled_data()
 ```
 

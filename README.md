@@ -74,13 +74,13 @@ vs.load_model()
 
 Train with the picture files in the directory.
 
-```
+```python
 vs.train_labeled_data()
 ```
 
 If you want to train with unlabeled data, you can also try to like this:
 
-```
+```python
 vs.train_unlabeled_data()
 ```
 
