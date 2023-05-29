@@ -94,73 +94,7 @@ class FaceProcessor:
                 if value in face.filenames:
                     return face
         return None
-
-class DirectoryManager:
-    def __init__(self, directory: Directory):
-        self.__directory = directory
-
-    @property
-    def dir(self) -> dict:
-        """
-        This function returns the directory.
-
-        Returns
-        -------
-        dict (dict) : directory dictionary.
-
-        Example
-        -------
-        dict = {
-            "labeled": "labeled",
-            "unlabeled": "unlabeled",
-            "model": "model",
-            "predict": "predict"
-        }
-        - labeled : directory of the labeled data
-        - unlabeled : directory of the unlabeled data
-        - model : directory of the model
-        - predict : directory of the predict data
-
-        Default
-        -------
-        labeled : "labeled"
-        unlabeled : "unlabeled"
-        model : "model"
-        predict : "predict"
-        """
-        return self.__directory
     
-    @dir.setter
-    def dir(self, dicto: dict) -> None:
-        def _set_dir(key: str, value: str):
-            # Check if directory exists
-            if os.path.isdir(value) == False:
-                raise("The directory does not exist.")
-            
-            # Check if value is absoulte path or relative path. if relative, convert to absolute path.
-            value = absp(value) if os.path.isabs(value) is False else value
-
-            if key == "labeled":
-                self.__directory.labeled = value
-            elif key == "unlabeled":
-                self.__directory.unlabeled = value
-            elif key == "model":
-                self.__directory.model = value
-            elif key == "predict":
-                self.__directory.predict = value
-
-        for key, value in dicto.items():
-            if key == "labeled":
-                _set_dir(key, value)
-            elif key == "unlabeled":
-                _set_dir(key, value)
-            elif key == "model":
-                _set_dir(key, value)
-            elif key == "predict":
-                _set_dir(key, value)
-            else:
-                raise("The key is not valid.")
-            
 
 class ModelHandler:
     def __init__(self, globalState: GlobalState = None, directory: Directory = None):
@@ -409,6 +343,9 @@ class Core(FaceProcessor):
         self.imageLoader = ImageLoader(self.__state, self.__directory)
         self.trainer = Trainer(self.__state, self.__directory, self.imageLoader, self.modelHandler)
         self.predictor = Predictor(self.__state, self.__directory)
+
+    def set_directory(self, directory: Directory) -> None:
+        self.__directory = directory
 
     def train_labeled_data(self) -> None:
         self.trainer.train_labeled_data()
