@@ -1,4 +1,4 @@
-import VisageSnap
+from .. import VisageSnap
 
 vs = VisageSnap.Core()
 vs.load_model()
