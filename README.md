@@ -65,6 +65,13 @@ Put the picture files to be used during training in the directory. In this case,
 
 **Recognize faces and train the model**
 
+Before training, you need to load model.
+You don't have a model? It's okay. It'll be created automatically if it doesn't exist.
+
+```python
+vs.load_model()
+```
+
 Train with the picture files in the directory.
 
 ```
@@ -95,16 +102,24 @@ print(result)
 }
 ```
 
+**Full example**
+
+You can see the full code [here](tests/test.py).
+
+---
+
 **To change the directory you work with**
 
 You should put the picture files into configured directory, and also model file is stored in model directory.
 
 ```python
-vs.set_directory({
-    "labeled": "labeled_pic",
-    "unlabeled": "unlabeled_pic",
-    "model": "my_model.d"
-})
+from VisageSnap import Directory
+
+my_dir = Directory( "labeled_pic",
+                    "unlabeled_pic",
+                    "my_model.d",
+                    "predict_dir")
+vs.set_directory(my_dir)
 ```
 
 _Default Directory:_
@@ -136,6 +151,12 @@ face_tom = vs.get_faceObject(From.FILENAME, "Tom-123.png")
 name: str = face_tom.label
 encodings: NDArray = face_tom.encodings
 filenames: list = face_tom.filenames
+```
+
+**To change prediction threshold**
+
+```python
+vs.threshold = 0.5  # Default: 0.48
 ```
 
 ## Acknowledgement
