@@ -4,6 +4,7 @@ from .faceprocessor import FaceProcessor
 import numpy as np
 import face_recognition
 import os
+from functools import cache
 
 class Predictor(FaceProcessor):
     def __init__(self, globalState: GlobalState = None, directory: Directory = None):
@@ -14,6 +15,7 @@ class Predictor(FaceProcessor):
         self.threshold = 0.48
 
     @staticmethod
+    @cache
     def __get_average(face: Face) -> np.array:
         """
         This function returns the average of the encodings.
@@ -26,6 +28,7 @@ class Predictor(FaceProcessor):
         return np.average(face.encodings, axis=0)
 
     @staticmethod
+    @cache
     def __get_distance(encoding1: np.ndarray, encoding2: np.ndarray) -> float:
         """
         This function returns the distance between two encodings.
