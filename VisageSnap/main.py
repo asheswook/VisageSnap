@@ -23,6 +23,15 @@ class Core(FaceProcessor):
     def set_directory(self, directory: Directory) -> None:
         self.__directory = directory
 
+    @property
+    def threshold(self) -> float:
+        return self.predictor.threshold
+    
+    @threshold.setter
+    def threshold(self, value: float) -> None:
+        assert isinstance(value, float), "threshold must be float."
+        self.predictor.threshold = value
+
     def load_model(self) -> None:
         """
         This function loads the model.
