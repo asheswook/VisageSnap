@@ -360,6 +360,19 @@ class Predictor(FaceProcessor):
                 result.append(-1)
 
         return result
+    
+    def predict_image(self, image: np.ndarray) -> list:
+        assert isinstance(image, np.ndarray), "parameter must be numpy array."
+
+        return self.__predict(image)
+    
+    def predict_encoding(self, encoding: np.ndarray) -> int:
+        assert isinstance(encoding, np.ndarray), "parameter must be numpy array."
+
+        prediction = self.__predict([encoding])
+
+        return -1 if -1 in prediction else prediction[0]
+    
 
     def predict_all(self) -> dict:
         result = {}
@@ -402,6 +415,12 @@ class Core(FaceProcessor):
 
     def train_unlabeled_data(self) -> None:
         self.trainer.train_unlabeled_data()
+
+    def predict_encoding(self, encoding: np.ndarray) -> int:
+        return self.predictor.predict_encoding(encoding)
+    
+    def predict_image(self, image: np.ndarray) -> int:
+        return self.predictor.predict_image(image)
 
     def predict_all(self) -> dict:
         return self.predictor.predict_all()
