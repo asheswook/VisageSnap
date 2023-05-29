@@ -3,4 +3,4 @@ __author__ = "asheswook"
 __license__ = "MIT"
 
 from .main import Core
-from .dataclasses import *
+from .classes import *
