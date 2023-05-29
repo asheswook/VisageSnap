@@ -1,4 +1,12 @@
-from .. import VisageSnap
+import sys
+import os
+sys.path.append(sys.path[0].replace("tests", ""))
+print(sys.path)
+import VisageSnap
+
+### ------------------------------------
+### DO NOT USE THE CODE ABOVE THIS LINE!
+### ------------------------------------
 
 vs = VisageSnap.Core()
 vs.load_model()

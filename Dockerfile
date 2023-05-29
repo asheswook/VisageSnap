@@ -42,7 +42,7 @@ RUN cd ~ && \
 # RUN whatever_command_you_run_to_start_your_app
 
 COPY . /root/VisageSnap
-RUN pip3 install visagesnap
+RUN pip3 install -r requirements.txt
 
 RUN cd /root/VisageSnap/tests && \
     python3 test.py
