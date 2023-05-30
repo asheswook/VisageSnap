@@ -88,12 +88,12 @@ class Predictor(FaceProcessor):
         return self.__predict(image)
 
     def predict_encoding(self, encoding: np.ndarray) -> int:
-        assert isinstance(
-            encoding, np.ndarray), "parameter must be numpy array."
+        assert isinstance(encoding, np.ndarray), "parameter must be numpy array."
 
-        prediction = self.__predict([encoding])
-
-        return -1 if -1 in prediction else prediction[0]
+        if self.__isNotUnknown(encoding):
+            return self.__state.model.predict([encoding])[0]
+        else:
+            return -1
 
     def predict_all(self) -> dict:
         result = {}
