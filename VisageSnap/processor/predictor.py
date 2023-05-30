@@ -16,7 +16,6 @@ class Predictor(FaceProcessor):
         self.threshold = 0.48
 
     @staticmethod
-    @cache
     def __get_average(face: Face) -> np.array:
         """
         This function returns the average of the encodings.
