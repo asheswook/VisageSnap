@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class FaceProcessor:
     def __init__(self, globalState: GlobalState):
         self.__state = globalState
@@ -78,7 +79,8 @@ class FaceProcessor:
 
         value (str) : value of the target.
         """
-        assert isinstance(target, str), "target must be 'From.LABEL' or 'From.FILENAME'."
+        assert isinstance(
+            target, str), "target must be 'From.LABEL' or 'From.FILENAME'."
         assert isinstance(value, str), "value must be a string."
 
         for face in self.gen_faces():
@@ -89,3 +91,6 @@ class FaceProcessor:
                 if value in face.filenames:
                     return face
         return None
+    
+    def get_faces(self) -> list[Face]:
+        return self.__state.faces
